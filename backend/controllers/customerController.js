@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 const { Customer, validateCustomer } = require("../models/customerModel");
 
+const pageSize = 10;
+
 /*
     1. @desc : Get All Customers
     2. @route GET : /api/customers?pageNumber=2
@@ -8,9 +10,11 @@ const { Customer, validateCustomer } = require("../models/customerModel");
 */
 const getCustomers = async (req, res) => {
   try {
+    const pageNumber = parseInt(req.query.pageNumber) || 1; // Get the requested page (default to page 1 if not provided)
     const count = await Customer.countDocuments(); // Count total number of documents in the collection
-    const customers = await Customer.find();
-
+    const customers = await Customer.find()
+      .skip((pageNumber - 1) * pageSize)
+      .limit(pageSize);
     return res.status(200).json({ count, customers }); // Return total count along with paginated movies
   } catch (err) {
     return res.status(500).send(err.message);
@@ -42,8 +46,6 @@ const getCustomer = async (req, res) => {
   }
 };
 
-
-
 /*
     1. @desc : Create Customer
     2. @route POST : /api/customers
@@ -61,7 +63,7 @@ const createCustomer = async (req, res) => {
       phone: req.body.phone,
       email: req.body.email,
       membership: req.body.membership,
-      gender: req.body.gender
+      gender: req.body.gender,
     });
 
     return res.status(201).send(customer);

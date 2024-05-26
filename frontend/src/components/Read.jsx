@@ -1,21 +1,34 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteUser, getAllUsers } from "../redux/slices/userDetailsSlice";
 import PopupUserRead from "./PopupUserRead";
 import { Link } from "react-router-dom";
+import Pagination from "./Pagination";
 
+// list of users
 const Read = () => {
+  const [currentPage, setCurrentPage] = useState(1);
+
   const dispatch = useDispatch();
+
   const { users, count, isLoading, searchData } = useSelector(
     (state) => state.user
   );
+
   const [showPopup, setShowPopup] = useState(false);
   const [selectGender, setSelectedGender] = useState("");
   const [id, setId] = useState();
 
   useEffect(() => {
-    dispatch(getAllUsers());
-  }, []);
+    dispatch(getAllUsers(currentPage));
+  }, [currentPage]);
+
+  const handlePageChange = useCallback(
+    (page) => {
+      setCurrentPage(page);
+    },
+    [currentPage]
+  );
 
   if (isLoading) return <h1>Loading</h1>;
 
@@ -83,7 +96,6 @@ const Read = () => {
               return user;
             }
           })
-
           .map((user) => (
             <div
               key={user._id}
@@ -118,6 +130,14 @@ const Read = () => {
               </div>
             </div>
           ))}
+
+      <h1>Footer</h1>
+      <Pagination
+        itemsCount={count}
+        pageSize={10}
+        currentPage={currentPage}
+        onPageChange={handlePageChange}
+      />
     </>
   );
 };

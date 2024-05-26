@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { searchUser } from "../redux/slices/userDetailsSlice";
+import { getAllUsers, searchUser } from "../redux/slices/userDetailsSlice";
 
 const NavBar = () => {
   const count = useSelector((state) => state.user.count);
@@ -10,10 +10,10 @@ const NavBar = () => {
   const [searchData, setSearchData] = useState("");
 
   useEffect(() => {
+    dispatch(getAllUsers());
     dispatch(searchUser(searchData));
   }, [searchData]);
 
-  
   return (
     <>
       <nav className="navbar navbar-expand-lg navbar-light bg-light">
@@ -25,14 +25,17 @@ const NavBar = () => {
             className="navbar-toggler"
             type="button"
             data-bs-toggle="collapse"
-            data-bs-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent"
+            data-bs-target="#navbarToggleExternalContent"
+            aria-controls="navbarToggleExternalContent"
             aria-expanded="false"
             aria-label="Toggle navigation"
           >
             <span className="navbar-toggler-icon"></span>
           </button>
-          <div className="collapse navbar-collapse" id="navbarSupportedContent">
+          <div
+            className="collapse navbar-collapse"
+            id="navbarToggleExternalContent"
+          >
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
               <li className="nav-item">
                 <Link to="/" className="nav-link active" aria-current="page">

@@ -3,8 +3,11 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 // get all users
 export const getAllUsers = createAsyncThunk(
   "getAllUsers",
-  async (args, { rejectWithValue }) => {
-    const response = await fetch("http://localhost:5000/api/customers");
+  async (currentPage, { rejectWithValue }) => {
+    console.log("Current Page: ", currentPage);
+    const response = await fetch(
+      `http://localhost:8000/api/customers?pageNumber=${currentPage}`
+    );
     try {
       return await response.json();
     } catch (err) {
@@ -17,7 +20,7 @@ export const getAllUsers = createAsyncThunk(
 export const createUser = createAsyncThunk(
   "createUser",
   async (data, { rejectWithValue }) => {
-    const response = await fetch("http://localhost:5000/api/customers", {
+    const response = await fetch("http://localhost:8000/api/customers", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
@@ -25,6 +28,7 @@ export const createUser = createAsyncThunk(
       body: JSON.stringify(data),
     });
     try {
+      console.log("create User: ", data);
       return await response.json();
     } catch (err) {
       return rejectWithValue(err);
@@ -38,7 +42,7 @@ export const updateUser = createAsyncThunk(
   async (updatedData, { rejectWithValue }) => {
     const { _id, __v, ...body } = updatedData;
     const response = await fetch(
-      `http://localhost:5000/api/customers/${updatedData._id}`,
+      `http://localhost:8000/api/customers/${updatedData._id}`,
       {
         method: "PUT",
         headers: {
@@ -60,7 +64,7 @@ export const updateUser = createAsyncThunk(
 export const deleteUser = createAsyncThunk(
   "deleteUser",
   async (id, { rejectWithValue }) => {
-    const response = await fetch(`http://localhost:5000/api/customers/${id}`, {
+    const response = await fetch(`http://localhost:8000/api/customers/${id}`, {
       method: "DELETE",
     });
     try {
@@ -92,10 +96,11 @@ const userDetailSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(getAllUsers.fulfilled, (state, action) => {
-        const { customers } = action.payload;
+        // action means response body
+        const { customers, count } = action.payload; // inside payload we have data return by backend. only used payload. other properties are not useful.
         state.isLoading = false;
         state.users = customers;
-        state.count = customers.length;
+        state.count = count;
       })
       .addCase(getAllUsers.rejected, (state, action) => {
         state.isLoading = false;
@@ -108,8 +113,10 @@ const userDetailSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(createUser.fulfilled, (state, action) => {
+        // first we stored data on server then update our UI.
         state.isLoading = false;
         state.users.push(action.payload);
+        state.count += 1;
       })
       .addCase(createUser.rejected, (state, action) => {
         state.isLoading = false;
@@ -122,6 +129,7 @@ const userDetailSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(updateUser.fulfilled, (state, action) => {
+        // first we update data on server then update our UI.
         state.isLoading = false;
         state.users = state.users.map((user) =>
           user._id === action.payload._id ? action.payload : user
@@ -138,12 +146,11 @@ const userDetailSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(deleteUser.fulfilled, (state, action) => {
+        // first we update data on server then update our UI.
         state.isLoading = false;
         const { _id } = action.payload;
-        if (_id) {
-          state.users = state.users.filter((user) => user._id !== _id);
-          state.count = state.users.length;
-        }
+        state.users = state.users.filter((user) => user._id !== _id);
+        state.count = state.users.length;
       })
       .addCase(deleteUser.rejected, (state, action) => {
         state.isLoading = false;
