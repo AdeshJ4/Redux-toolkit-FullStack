@@ -1,24 +1,33 @@
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { createUser } from "../redux/slices/userDetailsSlice";
 import { useNavigate } from "react-router-dom";
 
 const UserForm = () => {
   const [users, setUsers] = useState({});
-
   const navigate = useNavigate();
-
   const dispatch = useDispatch();
-
   const getUserData = (e) => {
     setUsers({ ...users, [e.target.name]: e.target.value });
   };
 
+  const error = useSelector((state) => state.user.error);
+  // useEffect(() => {
+  //   if (error) {
+  //     console.log('error from UserForm.jsx: ', error);
+  //     alert(error);
+  //   }
+  // }, [error]);
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log("users: ", users);
     dispatch(createUser(users));
-    navigate("/read");
+    if (error) {
+      console.log("Error: ", error);
+      alert(error);
+    } else {
+      navigate("/read");
+    }
   };
 
   return (
