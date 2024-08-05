@@ -1,26 +1,24 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteUser, getAllUsers } from "../redux/slices/userDetailsSlice";
+import { deleteCustomer, getAllCustomers } from "../redux/slices/customerDetailsSlice";
 import PopupUserRead from "./PopupUserRead";
 import { Link } from "react-router-dom";
 import Pagination from "./Pagination";
 
-// list of users
+// list of customers
 const Read = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const dispatch = useDispatch();
 
-  const { users, count, isLoading, searchData } = useSelector(
-    (state) => state.user
-  );
-
+  const { customers, count, isLoading, searchData } = useSelector((state) => state.customers);
+    
   const [showPopup, setShowPopup] = useState(false);
   const [selectGender, setSelectedGender] = useState("");
   const [id, setId] = useState();
 
   useEffect(() => {
-    dispatch(getAllUsers(currentPage));
+    dispatch(getAllCustomers(currentPage));
   }, [currentPage]);
 
   const handlePageChange = useCallback(
@@ -77,8 +75,8 @@ const Read = () => {
         />
       )}
 
-      {users &&
-        users
+      {customers &&
+        customers
           .filter((user) => {
             if (searchData.length === 0) {
               return user;

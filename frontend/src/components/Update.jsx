@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { updateUser } from "../redux/slices/userDetailsSlice";
+import { updateCustomer } from "../redux/slices/customerDetailsSlice";
 
 const Update = () => {
   const [updatedData, setUpdatedData] = useState();
@@ -24,7 +24,7 @@ const Update = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    dispatch(updateUser(updatedData));
+    dispatch(updateCustomer(updatedData));
     navigate("/read");
   };
 

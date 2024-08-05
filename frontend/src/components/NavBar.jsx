@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { getAllUsers, searchUser } from "../redux/slices/userDetailsSlice";
+import { getAllCustomers, searchCustomer } from "../redux/slices/customerDetailsSlice";
 
 const NavBar = () => {
-  const count = useSelector((state) => state.user.count);
+  const count = useSelector((state) => state.customers.count);
   const dispatch = useDispatch();
 
   const [searchData, setSearchData] = useState("");
 
   useEffect(() => {
-    dispatch(getAllUsers());
-    dispatch(searchUser(searchData));
+    dispatch(getAllCustomers());
+    dispatch(searchCustomer(searchData));
   }, [searchData]);
 
   return (

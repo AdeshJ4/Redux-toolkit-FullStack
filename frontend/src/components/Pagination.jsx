@@ -2,7 +2,6 @@ import _ from "lodash";
 import { memo } from "react";
 
 const Pagination = ({ itemsCount, pageSize, currentPage, onPageChange }) => {
-  console.log(itemsCount, pageSize, currentPage, onPageChange);
   const pagesCount = Math.ceil(itemsCount / pageSize);
   if (pagesCount === 1) return null;
   const pages = _.range(1, pagesCount + 1);
@@ -22,8 +21,8 @@ const Pagination = ({ itemsCount, pageSize, currentPage, onPageChange }) => {
   return (
     <nav>
       <ul className="pagination justify-content-center">
-        <li class="page-item">
-          <a class="page-link" onClick={() => getPrevPage()}>
+        <li className="page-item">
+          <a className="page-link" onClick={() => getPrevPage()}>
             Previous
           </a>
         </li>
@@ -39,8 +38,8 @@ const Pagination = ({ itemsCount, pageSize, currentPage, onPageChange }) => {
           </li>
         ))}
 
-        <li class="page-item">
-          <a class="page-link" onClick={() => getNextPage()}>
+        <li className="page-item">
+          <a className="page-link" onClick={() => getNextPage()}>
             Next
           </a>
         </li>

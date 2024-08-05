@@ -1,17 +1,18 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { createUser } from "../redux/slices/userDetailsSlice";
+import { createCustomer } from "../redux/slices/customerDetailsSlice";
 import { useNavigate } from "react-router-dom";
 
 const UserForm = () => {
-  const [users, setUsers] = useState({});
+  const [customers, setCustomers] = useState({});
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const getUserData = (e) => {
-    setUsers({ ...users, [e.target.name]: e.target.value });
+  const getCustomerData = (e) => {
+    setCustomers({ ...customers, [e.target.name]: e.target.value });
   };
 
-  const error = useSelector((state) => state.user.error);
+  // const error  = useSelector((state) => state.user.error);  // old
+  const { error } = useSelector((state) => state.customers);
   // useEffect(() => {
   //   if (error) {
   //     console.log('error from UserForm.jsx: ', error);
@@ -21,7 +22,7 @@ const UserForm = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    dispatch(createUser(users));
+    dispatch(createCustomer(customers));
     if (error) {
       console.log("Error: ", error);
       alert(error);
@@ -41,7 +42,7 @@ const UserForm = () => {
             type="text"
             className="form-control"
             name="name"
-            onChange={getUserData}
+            onChange={getCustomerData}
           />
         </div>
 
@@ -52,7 +53,7 @@ const UserForm = () => {
             type="email"
             name="email"
             className="form-control"
-            onChange={getUserData}
+            onChange={getCustomerData}
           />
         </div>
 
@@ -66,7 +67,7 @@ const UserForm = () => {
             className="form-control"
             id="phone"
             name="phone"
-            onChange={getUserData}
+            onChange={getCustomerData}
           />
         </div>
 
@@ -76,7 +77,7 @@ const UserForm = () => {
           <select
             className="form-select"
             name="membership"
-            onChange={getUserData}
+            onChange={getCustomerData}
           >
             <option value="none">None</option>
             <option value="bronze">Bronze</option>
@@ -92,7 +93,7 @@ const UserForm = () => {
             type="radio"
             name="gender"
             value="Male"
-            onChange={getUserData}
+            onChange={getCustomerData}
           />
           <label className="form-check-label">Male</label>
         </div>
@@ -102,7 +103,7 @@ const UserForm = () => {
             type="radio"
             name="gender"
             value="Female"
-            onChange={getUserData}
+            onChange={getCustomerData}
           />
           <label className="form-check-label">Female</label>
         </div>
