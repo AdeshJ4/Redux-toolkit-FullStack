@@ -3,30 +3,19 @@ import { useDispatch, useSelector } from "react-redux";
 import { deleteCustomer, getAllCustomers } from "../redux/slices/customerDetailsSlice";
 import PopupUserRead from "./PopupUserRead";
 import { Link } from "react-router-dom";
-import Pagination from "./Pagination";
 
-// list of customers
+
 const Read = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-
-  const dispatch = useDispatch();
-
   const { customers, count, isLoading, searchData } = useSelector((state) => state.customers);
+  const dispatch = useDispatch();
     
   const [showPopup, setShowPopup] = useState(false);
   const [selectGender, setSelectedGender] = useState("");
   const [id, setId] = useState();
 
   useEffect(() => {
-    dispatch(getAllCustomers(currentPage));
-  }, [currentPage]);
-
-  const handlePageChange = useCallback(
-    (page) => {
-      setCurrentPage(page);
-    },
-    [currentPage]
-  );
+    dispatch(getAllCustomers());
+  }, []);
 
   if (isLoading) return <h1>Loading</h1>;
 
@@ -77,50 +66,50 @@ const Read = () => {
 
       {customers &&
         customers
-          .filter((user) => {
+        .filter((customer) => {
             if (searchData.length === 0) {
-              return user;
+              return customer;
             } else {
               // you can filter by name, email, phone...
-              return user.name.toLowerCase().includes(searchData.toLowerCase());
+              return customer.name.toLowerCase().includes(searchData.toLowerCase());
             }
           })
-          .filter((user) => {
+        .filter((customer) => {
             if (selectGender === "Male") {
-              return user.gender === selectGender.toLowerCase();
+              return customer.gender === selectGender.toLowerCase();
             } else if (selectGender === "Female") {
-              return user.gender === selectGender.toLowerCase();
+              return customer.gender === selectGender.toLowerCase();
             } else {
-              return user;
+              return customer;
             }
           })
-          .map((user) => (
+        .map((customer) => (
             <div
-              key={user._id}
+              key={customer._id}
               className="card mx-auto w-50 my-2"
               style={{ width: "18rem" }}
             >
               <div className="card-body">
-                <h5 className="card-title">{user.name}</h5>
-                <h6 className="card-subtitle mb-2 text-muted">{user.email}</h6>
-                <h6 className="card-subtitle mb-2 text-muted">{user.phone}</h6>
-                <h6 className="card-subtitle mb-2 text-muted">{user.gender}</h6>
+                <h5 className="card-title">{customer.name}</h5>
+                <h6 className="card-subtitle mb-2 text-muted">{customer.email}</h6>
+                <h6 className="card-subtitle mb-2 text-muted">{customer.phone}</h6>
+                <h6 className="card-subtitle mb-2 text-muted">{customer.gender}</h6>
                 <h6 className="card-subtitle mb-2 text-muted">
-                  {user.membership}
+                  {customer.membership}
                 </h6>
 
                 <button
                   className="card-link"
-                  onClick={() => [setId(user._id), setShowPopup(true)]}
+                  onClick={() => [setId(customer._id), setShowPopup(true)]}
                 >
                   View
                 </button>
 
-                <Link to={`/edit/${user._id}`} className="card-link">
+                <Link to={`/edit/${customer._id}`} className="card-link">
                   Edit
                 </Link>
                 <Link
-                  onClick={() => dispatch(deleteUser(user._id))}
+                  onClick={() => dispatch(deleteCustomer(customer._id))}
                   className="card-link"
                 >
                   Delete
@@ -129,13 +118,6 @@ const Read = () => {
             </div>
           ))}
 
-      <h1>Footer</h1>
-      <Pagination
-        itemsCount={count}
-        pageSize={10}
-        currentPage={currentPage}
-        onPageChange={handlePageChange}
-      />
     </>
   );
 };

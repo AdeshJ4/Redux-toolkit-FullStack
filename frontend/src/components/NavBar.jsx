@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { getAllCustomers, searchCustomer } from "../redux/slices/customerDetailsSlice";
 
 const NavBar = () => {
-  const count = useSelector((state) => state.customers.count);
+  const { count } = useSelector((state) => state.customers);
   const dispatch = useDispatch();
 
   const [searchData, setSearchData] = useState("");

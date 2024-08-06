@@ -3,6 +3,7 @@ const morgan = require("morgan");
 const config = require("config");
 const deBug = require("debug")("app:startUp");
 const customers = require("../routes/customers");
+const movies = require("../routes/movies");
 const cors = require("cors");
 
 module.exports = function (app) {
@@ -16,4 +17,5 @@ module.exports = function (app) {
   }
   app.use(express.json());
   app.use("/api/customers", customers);
+  app.use("/api/movies", movies);
 };

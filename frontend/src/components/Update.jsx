@@ -5,7 +5,7 @@ import { updateCustomer } from "../redux/slices/customerDetailsSlice";
 
 const Update = () => {
   const [updatedData, setUpdatedData] = useState();
-  const { users, isLoading } = useSelector((state) => state.user);
+  const { customers, isLoading } = useSelector((state) => state.customers);
 
   const navigate = useNavigate();
   const { id } = useParams();
@@ -13,7 +13,7 @@ const Update = () => {
 
   useEffect(() => {
     if (id) {
-      const singleUser = users.filter((user) => user._id === id);
+      const singleUser = customers.filter((user) => user._id === id);
       setUpdatedData(singleUser[0]); // singleUser = [{..}]  => setUpdatedData({})
     }
   }, []);
