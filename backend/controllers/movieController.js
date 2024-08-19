@@ -116,6 +116,8 @@ const getMovie = async (req, res) => {
     3. @access public
 */
 const createMovie = async (req, res) => {
+  console.log('movie data : ', req.body);
+  
   try {
     const { error } = validateMovie(req.body);
     if (error) {
@@ -166,7 +168,6 @@ const createMovie = async (req, res) => {
       language: req.body.language,
       country: req.body.country,
       rating: req.body.rating,
-      reviews: req.body.reviews,
       boxOffice: req.body.boxOffice,
       awards: req.body.awards,
       trailerUrl: req.body.trailerUrl,

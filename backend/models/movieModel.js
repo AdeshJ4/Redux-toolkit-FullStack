@@ -15,8 +15,14 @@ const movieSchema = new mongoose.Schema(
       type: [String]
     },
     director: {
-      type: String,
-      trim: true,
+      type: [String],        // Array of strings
+      required: true,        // Mark the field as required
+      validate: {
+        validator: function (v) {
+          return v.length > 0; // Ensures the array is not empty
+        },
+        message: 'A movie must have at least one director.',
+      },
     },
     cast: {
       type: [String],
@@ -28,7 +34,6 @@ const movieSchema = new mongoose.Schema(
     },
     duration: {
       type: Number, // duration in minutes
-
     },
     language: {
       type: String,
@@ -36,7 +41,6 @@ const movieSchema = new mongoose.Schema(
     },
     country: {
       type: String,
-
       trim: true,
     },
     rating: {
@@ -91,29 +95,24 @@ const movieSchema = new mongoose.Schema(
 
 function validateMovie(movie) {
   const joiSchema = Joi.object({
-    title: Joi.string(),
-    releaseDate: Joi.date(),
-    genre: Joi.array().items(Joi.string()),
-    director: Joi.string(),
+    title: Joi.string().required(),
+    releaseDate: Joi.date().required(),
+    genre: Joi.array().items(Joi.string()).required(),
+    director: Joi.array()
+      .items(Joi.string().required()) 
+      .min(1) 
+      .required(), 
     cast: Joi.array().items(Joi.string()),
     synopsis: Joi.string(),
-    duration: Joi.number(),
-    language: Joi.string(),
+    duration: Joi.number().required(),
+      language: Joi.string().required(),
     country: Joi.string(),
     rating: Joi.string(),
-    reviews: Joi.array().items(
-      Joi.object({
-        reviewer: Joi.string(),
-        reviewText: Joi.string(),
-        rating: Joi.number(),
-        date: Joi.date(),
-      })
-    ),
-    boxOffice: Joi.number(),
+    boxOffice: Joi.string(),
     awards: Joi.array().items(Joi.string()),
     trailerUrl: Joi.string().uri(),
     posterUrl: Joi.string().uri(),
-    format: Joi.string(),
+    format: Joi.string().required(),
     aspectRatio: Joi.string(),
     resolution: Joi.string(),
   });
