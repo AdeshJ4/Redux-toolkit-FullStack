@@ -11,20 +11,30 @@ const movieSchema = new mongoose.Schema(
     releaseDate: {
       type: Date
     },
-    genre: {
+    genres: {
       type: [String]
     },
-    director: {
+    directors: {
       type: [String],        // Array of strings
       required: true,        // Mark the field as required
       validate: {
         validator: function (v) {
           return v.length > 0; // Ensures the array is not empty
         },
-        message: 'A movie must have at least one director.',
+        message: 'A movie must have at least one directors.',
       },
     },
     cast: {
+      type: [String],        // Array of strings
+      required: true,        // Mark the field as required
+      validate: {
+        validator: function (v) {
+          return v.length > 0; // Ensures the array is not empty
+        },
+        message: 'A cast must have at least one member.',
+      },
+    },
+    awards: {
       type: [String],
       default: [],
     },
@@ -61,10 +71,6 @@ const movieSchema = new mongoose.Schema(
     boxOffice: {
       type: Number,
     },
-    awards: {
-      type: [String],
-      default: [],
-    },
     trailerUrl: {
       type: String,
       trim: true,
@@ -97,19 +103,22 @@ function validateMovie(movie) {
   const joiSchema = Joi.object({
     title: Joi.string().required(),
     releaseDate: Joi.date().required(),
-    genre: Joi.array().items(Joi.string()).required(),
-    director: Joi.array()
+    genres: Joi.array().items(Joi.string()).required(),
+    directors: Joi.array()
       .items(Joi.string().required()) 
       .min(1) 
       .required(), 
-    cast: Joi.array().items(Joi.string()),
+    cast: Joi.array()
+      .items(Joi.string().required())
+      .min(1)
+      .required(),
+    awards: Joi.array().items(Joi.string()),
     synopsis: Joi.string(),
     duration: Joi.number().required(),
       language: Joi.string().required(),
     country: Joi.string(),
     rating: Joi.string(),
     boxOffice: Joi.string(),
-    awards: Joi.array().items(Joi.string()),
     trailerUrl: Joi.string().uri(),
     posterUrl: Joi.string().uri(),
     format: Joi.string().required(),

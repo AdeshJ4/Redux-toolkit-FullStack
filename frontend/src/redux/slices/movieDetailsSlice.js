@@ -109,7 +109,7 @@ const movieDetailSlice = createSlice({
       })
       .addCase(createMovie.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload;
+        state.error = action.error.message;
       });
 
     // updateMovie

@@ -19,22 +19,24 @@ import { useState } from "react";
 import * as Yup from "yup";
 import { createMovie } from "../redux/slices/movieDetailsSlice";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const validationSchema = Yup.object({
-  title: Yup.string().required("Title is required"),
+  title: Yup.string(),
+  // title: Yup.string().required("Title is required"),
   releaseDate: Yup.date().required("Release Date is required"),
-  genre: Yup.array()
-    .min(1, "Select at least on genre")
-    .required("Select at least one genre"),
-  director: Yup.array().min(1, "At least one director must be added"),
+  genres: Yup.array()
+    .min(1, "Select at least on genres")
+    .required("Select at least one genres"),
+  directors: Yup.array().min(1, "At least one directors must be added"),
   cast: Yup.array().min(1, "At least one cast member must be added"),
+  awards: Yup.array(),
   synopsis: Yup.string().required("Synopsis is required"),
   duration: Yup.number().required("Duration is required").positive().integer(),
   language: Yup.string().required("Language is required"),
   country: Yup.string().required("Country is required"),
   rating: Yup.string().required("Rating is required"),
   boxOffice: Yup.number().required("Box Office is required").positive(),
-  awards: Yup.array(), // Optional, not required
   trailerUrl: Yup.string().url("Enter a valid URL"),
   posterUrl: Yup.string().url("Enter a valid URL"),
   format: Yup.string().required("Format is required"),
@@ -44,23 +46,24 @@ const validationSchema = Yup.object({
 
 const MovieForm = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [formValues, setFormValues] = useState({
     title: "",
     releaseDate: "",
-    genre: [],
-    director: [],
-    newDirector : "",
+    genres: [],
+    directors: [],
+    newDirector: "",
     cast: [],
-    newCastMember: "", // for the input field where the user types a new cast member's name
+    newCastMember: "",
+    awards: [],
+    newAward: "",
     synopsis: "",
     duration: "",
     language: "",
     country: "",
     rating: "",
     boxOffice: "",
-    awards: [],
-    newAward: "",
     trailerUrl: "",
     posterUrl: "",
     format: "",
@@ -81,8 +84,6 @@ const MovieForm = () => {
   const validateForm = async () => {
     try {
       await validationSchema.validate(formValues, { abortEarly: false });
-      const parsedData = validationSchema.cast(formValues);
-      console.log("parsedData", parsedData);
       setErrors({});
       return true;
     } catch (err) {
@@ -100,38 +101,43 @@ const MovieForm = () => {
     const isValid = await validateForm();
     if (isValid) {
       console.log("Form submitted:", formValues);
-      const { newCastMember, newAward, ...dataToSubmit } = formValues;
+      const { newCastMember, newAward, newDirector, ...dataToSubmit } =
+        formValues;
 
-      const result = await dispatch(createMovie(dataToSubmit));
+      try {
+        const result = await dispatch(createMovie(dataToSubmit));
 
-      console.log("result", result);
-
-      if (createMovie.fulfilled.match(result)) {
-        console.log("Movie created successfully:", result.payload);
-      } else {
-        console.error("Failed to create movie:", result.payload);
-      }
+        if (createMovie.fulfilled.match(result)) {
+          console.log("Movie created successfully:", result.payload);
+        } else {
+          console.error("Failed to create movie:", result.payload);
+        }
+      } catch (err) {}
 
       setFormValues({
-        // title: '',
-        // releaseDate: '',
-        // genre: [],
-        // director: '',
-        // cast: [],
-        // synopsis: '',
-        // duration: '',
-        // language: '',
-        // country: '',
-        // rating: '',
-        // boxOffice: '',
-        // awards: [],
-        // trailerUrl: '',
-        // posterUrl: '',
-        // format: '',
-        // aspectRatio: '',
-        // resolution: '',
-        // newCastMember: '',
+        title: "",
+        releaseDate: "",
+        genres: [],
+        directors: [],
+        newDirector: "",
+        cast: [],
+        newCastMember: "",
+        awards: [],
+        newAward: "",
+        synopsis: "",
+        duration: "",
+        language: "",
+        country: "",
+        rating: "",
+        boxOffice: "",
+        trailerUrl: "",
+        posterUrl: "",
+        format: "",
+        aspectRatio: "",
+        resolution: "",
       });
+
+      navigate("/movies");
     }
   };
 
@@ -140,11 +146,11 @@ const MovieForm = () => {
     const { name, checked } = event.target;
     setFormValues((prevValues) => {
       const newGenres = checked
-        ? [...prevValues.genre, name]
-        : prevValues.genre.filter((genre) => genre !== name);
+        ? [...prevValues.genres, name]
+        : prevValues.genres.filter((genres) => genres !== name);
       return {
         ...prevValues,
-        genre: newGenres,
+        genres: newGenres,
       };
     });
   };
@@ -163,17 +169,16 @@ const MovieForm = () => {
   const handleRemoveCastMember = (memberToRemove) => {
     setFormValues((prevValues) => ({
       ...prevValues,
-      cast: prevValues.cast.filter((member) => member !== memberToRemove),
+      cast: prevValues.cast?.filter((member) => member !== memberToRemove),
     }));
   };
-
 
   // Director logic
   const handleAddDirector = () => {
     if (formValues.newDirector.trim()) {
       setFormValues((prevValues) => ({
         ...prevValues,
-        director: [...prevValues.director, formValues.newDirector.trim()],
+        directors: [...prevValues.directors, formValues.newDirector.trim()],
         newDirector: "",
       }));
     }
@@ -182,10 +187,9 @@ const MovieForm = () => {
   const handleRemoveDirector = (directorToRemove) => {
     setFormValues((prevValues) => ({
       ...prevValues,
-      director: prevValues.director.filter((director) => director !== directorToRemove),
+      directors: prevValues.directors?.filter((d) => d !== directorToRemove),
     }));
   };
-
 
   // Award logic
   const handleAddAward = () => {
@@ -201,7 +205,7 @@ const MovieForm = () => {
   const handleRemoveAward = (awardToRemove) => {
     setFormValues((prevValues) => ({
       ...prevValues,
-      awards: prevValues.awards.filter((award) => award !== awardToRemove),
+      awards: prevValues.awards.filter((awards) => awards !== awardToRemove),
     }));
   };
 
@@ -237,35 +241,25 @@ const MovieForm = () => {
       />
 
       {/* Genre Checkboxes */}
-      <FormControl component="fieldset" error={!!errors.genre}>
+      <FormControl component="fieldset" error={!!errors.genres}>
         <FormLabel component="legend">Genres</FormLabel>
         <FormGroup>
-          {["Action", "Comedy", "Sci-fi", "Anime", "Thriller"].map((genre) => (
+          {["Action", "Comedy", "Sci-fi", "Anime", "Thriller"].map((genres) => (
             <FormControlLabel
-              key={genre}
+              key={genres}
               control={
                 <Checkbox
-                  checked={formValues.genre?.includes(genre)}
+                  checked={formValues.genres?.includes(genres)}
                   onChange={handleGenreChange}
-                  name={genre}
+                  name={genres}
                 />
               }
-              label={genre}
+              label={genres}
             />
           ))}
         </FormGroup>
-        {errors.genre && <div style={{ color: "red" }}>{errors.genre}</div>}
+        {errors.genres && <div style={{ color: "red" }}>{errors.genres}</div>}
       </FormControl>
-
-      <TextField
-        id="director"
-        name="director"
-        label="Director"
-        value={formValues.director}
-        onChange={handleChange}
-        error={!!errors.director}
-        helperText={errors.director}
-      />
 
       {/* Cast Input Field with Add Button */}
       <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -323,14 +317,14 @@ const MovieForm = () => {
 
       {/* List of Awards with Delete Option */}
       <List>
-        {formValues.awards?.map((award, index) => (
+        {formValues.awards?.map((awards, index) => (
           <ListItem key={index}>
-            <ListItemText primary={award} />
+            <ListItemText primary={awards} />
             <ListItemSecondaryAction>
               <IconButton
                 edge="end"
                 aria-label="delete"
-                onClick={() => handleRemoveAward(award)}
+                onClick={() => handleRemoveAward(awards)}
               >
                 <DeleteIcon />
               </IconButton>
@@ -338,7 +332,6 @@ const MovieForm = () => {
           </ListItem>
         ))}
       </List>
-
 
       {/* Director Input Field with Add Button */}
       <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -354,18 +347,20 @@ const MovieForm = () => {
           Add
         </Button>
       </Box>
-      {errors.director && <div style={{ color: "red" }}>{errors.director}</div>}
+      {errors.directors && (
+        <div style={{ color: "red" }}>{errors.directors}</div>
+      )}
 
       {/* List of Directors with Delete Option */}
       <List>
-        {formValues.director?.map((director, index) => (
+        {formValues.directors?.map((d, index) => (
           <ListItem key={index}>
-            <ListItemText primary={director} />
+            <ListItemText primary={d} />
             <ListItemSecondaryAction>
               <IconButton
                 edge="end"
                 aria-label="delete"
-                onClick={() => handleRemoveDirector(director)}
+                onClick={() => handleRemoveDirector(d)}
               >
                 <DeleteIcon />
               </IconButton>

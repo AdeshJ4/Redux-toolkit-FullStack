@@ -149,7 +149,7 @@ const createMovie = async (req, res) => {
           }
         ],
         "boxOffice": 2797800564,
-        "awards": ["Academy Award for Best Visual Effects (Nomination)"],
+        "award": ["Academy Award for Best Visual Effects (Nomination)"],
         "trailerUrl": "https://www.youtube.com/watch?v=TcMBFSGVi1c",
         "posterUrl": "https://example.com/poster5.jpg",
         "format": "IMAX",
@@ -158,23 +158,29 @@ const createMovie = async (req, res) => {
     }
     */
     const movie = await Movie.create({
-      title: req.body.title,
-      releaseDate: req.body.releaseDate,
-      genre: req.body.genre,
-      director: req.body.director,
-      cast: req.body.cast,
-      synopsis: req.body.synopsis,
-      duration: req.body.duration,
-      language: req.body.language,
-      country: req.body.country,
-      rating: req.body.rating,
-      boxOffice: req.body.boxOffice,
-      awards: req.body.awards,
-      trailerUrl: req.body.trailerUrl,
-      posterUrl: req.body.posterUrl,
-      format: req.body.format,
-      aspectRatio: req.body.aspectRatio,
-      resolution: req.body.resolution,
+      title: req.body.title,                       // String (required, trim)
+      releaseDate: req.body.releaseDate,           // Date
+      genres: Array.isArray(req.body.genres) ? req.body.genres : [],  // Array of strings
+      directors: Array.isArray(req.body.directors) ? req.body.directors : [], // Required, array of strings
+      cast: Array.isArray(req.body.cast) ? req.body.cast : [],     // Required, array of strings
+      awards: Array.isArray(req.body.awards) ? req.body.awards : [],  // Array of strings
+      synopsis: req.body.synopsis,                 // String (trim)
+      duration: req.body.duration,                 // Number (duration in minutes)
+      language: req.body.language,                 // String (trim)
+      country: req.body.country,                   // String (trim)
+      rating: req.body.rating,                     // String (trim)
+      boxOffice: req.body.boxOffice,               // Number
+      reviews: Array.isArray(req.body.reviews) ? req.body.reviews.map(review => ({
+        reviewer: review.reviewer,
+        reviewText: review.reviewText,
+        rating: review.rating,
+        date: review.date,
+      })) : [],                                     // Array of review objects
+      trailerUrl: req.body.trailerUrl,             // String (trim)
+      posterUrl: req.body.posterUrl,               // String (trim)
+      format: req.body.format,                     // String (trim)
+      aspectRatio: req.body.aspectRatio,           // String (trim)
+      resolution: req.body.resolution,             // String (trim)
     });
 
     return res.status(201).json({ status: "success", data: movie });
